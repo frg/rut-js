@@ -121,7 +121,7 @@
   //   localData.pipeline = pipelineArr;
   //
   //   localStorage.setItem(localStorageName, JSON.stringify(localData));
-  // };
+  // }
 
   // append event queue ready to be sent
   function appendQueue(event) {
