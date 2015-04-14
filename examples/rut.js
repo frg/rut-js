@@ -5,6 +5,7 @@
   var dateOfPageLoad = new Date();
   var serverResponded = true;
   var urlStringLimit = 1900;
+  var guid = "";
 
   // Define our constructor
   this.Rut = function() {
@@ -23,7 +24,7 @@
       _this.options = extendDefaults(defaults, arguments[0]);
     }
 
-    _this.options.serverURL = _this.options.serverURL + "?guid=&";
+    _this.options.serverURL = _this.options.serverURL + "?guid=" + guid + "&";
 
     // check for local storage support
     try {
@@ -82,7 +83,6 @@
         };
       }
     };
-
   }
 
   // Public Methods
@@ -167,6 +167,7 @@
   // Creates the default local storage json object
   function createDefaultJson() {
     return {
+      guid: guid,
       pipeline: [],
       queue: []
     };
