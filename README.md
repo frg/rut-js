@@ -1,9 +1,8 @@
 # Ftakar [![Code Climate](https://codeclimate.com/github/frg/rut-js/badges/gpa.svg)](https://codeclimate.com/github/frg/rut-js)
 #### A js plugin that tracks user behaviour
-.
 
 ## Version
-0.1
+### **THIS PLUGIN IS STILL IN DEVELOPMENT
 
 ## Description
 A javascript plugin with the aim of making user tracking flexible and effortless. The plugin is in its very early stages of implementation therefore here's my to-do list up front.
