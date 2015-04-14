@@ -4,6 +4,7 @@
   var localStorageName = "__rut";
   var dateOfPageLoad = new Date();
   var serverResponded = true;
+  var urlStringLimit = 1900;
 
   // Define our constructor
   this.Rut = function() {
@@ -13,7 +14,7 @@
       debugMode: true,
       sendTimeout: 5000,
       cacheSecret: "abc123",
-      serverURL: "localhost:5467/rut",
+      serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000
     }
 
@@ -58,11 +59,7 @@
     this.sendQueue = function() {
       console.info("Sending queue.");
 
-      // append current queue to pipeline
-      var pipeline = getPipeline();
-      pipeline = pipeline.concat(getQueue());
-      setPipeline(pipeline);
-      clearQueue();
+      appendPipelineWithQueue();
 
       // if events exist in pipeline
       if (serverResponded && pipeline.length > 0) {
@@ -90,11 +87,31 @@
 
   // Public Methods
 
-  Rut.prototype.trackElement = function(element, a) {
+  Rut.prototype.trackElement = function(element, eventsTrigger, eventID, elementID, description) {
+
+  }
+
+  Rut.prototype.trackEvent = function(eventID, elementID, description) {
 
   }
 
   // Private Methods
+
+  // append current queue to pipeline
+  function appendPipelineWithQueue() {
+    var localData = getLocalData();
+
+    pipeline = localData.pipeline.concat(localData.queue);
+
+    if ((_this.options.serverURL + 'queue=' + JSON.stringify(pipeline)).length >= urlStringLimit)
+      return false;
+
+    localData.pipeline = pipeline;
+    localData.queue = [];
+
+    // save localdata
+    localStorage.setItem(localStorageName, JSON.stringify(localData));
+  }
 
   // set pipeline
   function setPipeline(pipelineArr) {
