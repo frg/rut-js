@@ -13,11 +13,10 @@
     // Define option defaults
     var defaults = {
       debugMode: true,
-      sendTimeout: 5000,
-      cacheSecret: "abc123",
+      incrementSend: 5000,
       serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000
-    }
+    };
 
     // Create options by extending defaults with the passed in arugments
     if (arguments[0] && typeof arguments[0] === "object") {
@@ -28,9 +27,9 @@
 
     // check for local storage support
     try {
-      ('localStorage' in window && window['localStorage'] !== null);
+      ('localStorage' in window && window.localStorage !== null);
     } catch(e) {
-      _this.options.sendTimeout = false;
+      _this.options.incrementSend = false;
     }
 
     // log event to queue
@@ -42,10 +41,10 @@
       });
     };
 
-    if (!_this.options.debugMode && isInt(_this.options.sendTimeout) && _this.options.sendTimeout > 0) {
+    if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
       window.setInterval(function() {
         _this.sendQueue(_this.getQueue());
-      }, self.options.sendTimeout);
+      }, _this.options.incrementSend);
     } else {
       // append log function to send data on log
       var _oldLogEvent = _this.logEvent;
@@ -60,7 +59,7 @@
     this.sendQueue = function() {
       console.info("Sending queue.");
 
-      appendPipelineWithQueue();
+      var pipeline = appendPipelineWithQueue().pipeline;
 
       // if events exist in pipeline
       if (serverResponded && pipeline.length > 0) {
@@ -83,17 +82,17 @@
         };
       }
     };
-  }
+  };
 
   // Public Methods
 
   Rut.prototype.trackElement = function(element, eventsTrigger, eventID, elementID, description) {
 
-  }
+  };
 
   Rut.prototype.trackEvent = function(eventID, elementID, description) {
 
-  }
+  };
 
   // Private Methods
 
@@ -103,23 +102,26 @@
 
     pipeline = localData.pipeline.concat(localData.queue);
 
-    if ((_this.options.serverURL + 'queue=' + JSON.stringify(pipeline)).length >= urlStringLimit)
+    if ((_this.options.serverURL + 'queue=' + JSON.stringify(pipeline)).length >= urlStringLimit) {
       return false;
+    }
 
     localData.pipeline = pipeline;
     localData.queue = [];
 
     // save localdata
     localStorage.setItem(localStorageName, JSON.stringify(localData));
+
+    return localData;
   }
 
   // set pipeline
-  function setPipeline(pipelineArr) {
-    var localData = getLocalData();
-    localData.pipeline = pipelineArr;
-
-    localStorage.setItem(localStorageName, JSON.stringify(localData));
-  };
+  // function setPipeline(pipelineArr) {
+  //   var localData = getLocalData();
+  //   localData.pipeline = pipelineArr;
+  //
+  //   localStorage.setItem(localStorageName, JSON.stringify(localData));
+  // };
 
   // append event queue ready to be sent
   function appendQueue(event) {
@@ -129,13 +131,13 @@
     localData.queue.push(event);
 
     localStorage.setItem(localStorageName, JSON.stringify(localData));
-  };
+  }
 
   // gets events that are waiting for
   // a successful server response
-  function getPipeline() {
-    return getLocalData().pipeline;
-  }
+  // function getPipeline() {
+  //   return getLocalData().pipeline;
+  // }
 
   // clears pipeline
   function clearPipeline() {
@@ -149,20 +151,20 @@
   }
 
   // gets event queue
-  function getQueue() {
-    return getLocalData().queue;
-  }
+  // function getQueue() {
+  //   return getLocalData().queue;
+  // }
 
   // clears event queue
-  function clearQueue() {
-    var localData = getLocalData();
-
-    // clear queue
-    localData.queue = [];
-
-    // save queue
-    localStorage.setItem(localStorageName, JSON.stringify(localData));
-  }
+  // function clearQueue() {
+  //   var localData = getLocalData();
+  //
+  //   // clear queue
+  //   localData.queue = [];
+  //
+  //   // save queue
+  //   localStorage.setItem(localStorageName, JSON.stringify(localData));
+  // }
 
   // Creates the default local storage json object
   function createDefaultJson() {
@@ -187,8 +189,9 @@
     // loop through default json
     for (var formatProperty in defaultFormat) {
         // check if property exists
-        if (!json.hasOwnProperty(formatProperty))
+        if (!json.hasOwnProperty(formatProperty)) {
           return false;
+        }
     }
 
     return true;
@@ -199,7 +202,7 @@
     // Retrieve the object from storage
     var json = localStorage.getItem(localStorageName);
 
-    if (json != null && isDataValid(json))
+    if (json !== null && isDataValid(json))
       return JSON.parse(json);
 
     return createDefaultJson();
