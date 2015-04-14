@@ -15,7 +15,10 @@
       debugMode: true,
       incrementSend: 5000,
       serverURL: window.location.origin + "/rut",
-      retryOnFailTimeout: 5000
+      retryOnFailTimeout: 5000,
+      // to implement
+      logErrors: true,
+      obfuscateLocalData: false
     };
 
     // Create options by extending defaults with the passed in arugments
@@ -27,7 +30,7 @@
 
     // check for local storage support
     try {
-      ('localStorage' in window && window.localStorage !== null);
+      if ('localStorage' in window && window.localStorage !== null);
     } catch(e) {
       _this.options.incrementSend = false;
     }
@@ -99,14 +102,13 @@
   // append current queue to pipeline
   function appendPipelineWithQueue() {
     var localData = getLocalData();
+    var newPipeline = localData.pipeline.concat(localData.queue);
 
-    pipeline = localData.pipeline.concat(localData.queue);
-
-    if ((_this.options.serverURL + 'queue=' + JSON.stringify(pipeline)).length >= urlStringLimit) {
+    if ((_this.options.serverURL + 'queue=' + JSON.stringify(newPipeline)).length >= urlStringLimit) {
       return false;
     }
 
-    localData.pipeline = pipeline;
+    localData.pipeline = newPipeline;
     localData.queue = [];
 
     // save localdata
@@ -202,8 +204,9 @@
     // Retrieve the object from storage
     var json = localStorage.getItem(localStorageName);
 
-    if (json !== null && isDataValid(json))
+    if (json !== null && isDataValid(json)) {
       return JSON.parse(json);
+    }
 
     return createDefaultJson();
   }
