@@ -30,7 +30,7 @@
 
     // check for local storage support
     try {
-      if ('localStorage' in window && window.localStorage !== null){}
+      ('localStorage' in window && window.localStorage !== null) ? : '';
     } catch(e) {
       _this.options.incrementSend = false;
     }
