@@ -22,13 +22,138 @@
       // to implement
       obfuscateLocalData: false,
       captureErrors: true,
-      captureBrowserDetails: false,
-      capturePageStats: false
+      captureBrowserDetails: true,
+      capturePageStats: true
     };
 
     // Create options by extending defaults with the passed in arugments
     if (arguments[0] && typeof arguments[0] === "object") {
       _this.options = extendDefaults(defaults, arguments[0]);
+    }
+
+    // Capture errors
+    if (_this.options.captureErrors == true) {
+      window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
+        if (errorMsg.indexOf('Script error.') > -1) {
+          // if error message is useless.. do nothing
+          return;
+        }
+
+        console.info('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' +  errorObj);
+      }
+    }
+
+    // Get page load time
+    if (_this.options.capturePageStats == true) {
+      // to log attributes and such
+      var currentURL = window.location.href;
+
+      var URLreferrer = document.referrer;
+
+      window.onload = function(){
+        setTimeout(function(){
+          // https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+          // might just log all this info
+          var t = performance.timing;
+
+          // Network latency
+          console.info("Network latency: ", t.responseEnd - t.fetchStart, "ms");
+
+          // The time taken for page load once the page is received from the server
+          console.info("Page load: ", t.loadEventEnd - t.responseEnd, "ms");
+
+          // The whole process of navigation and page load
+          console.info("Navigation & Page load: ", t.loadEventEnd - t.navigationStart, "ms");
+
+        }, 0);
+      }
+    }
+
+    // Get browser details
+    if (_this.options.captureBrowserDetails == true) {
+      navigator.userAgent
+      navigator.appVersion
+      navigator.platform
+      navigator.cookieEnabled
+      window.outerWidth
+      window.outerHeight
+      window.innerWidth
+      window.innerHeight
+      window.navigator.javaEnabled()
+
+      // Credit to font and plugin code
+      // https://panopticlick.eff.org
+      function getPlugins(){
+        // fetch and serialize plugins
+        var plugins = "";
+
+        // in Mozilla and most non-IE browsers
+        if (navigator.plugins) {
+          var np = navigator.plugins;
+          var plist = new Array();
+
+          // sorting navigator.plugins is a right royal pain
+          // but it seems to be necessary because their order
+          // is non-constant in some browsers
+          for (var i = 0; i < np.length; i++) {
+            plist[i] = np[i].name + "; ";
+            plist[i] += np[i].description + "; ";
+            plist[i] += np[i].filename + ";";
+
+            for (var n = 0; n < np[i].length; n++) {
+              plist[i] += " (" + np[i][n].description +"; "+ np[i][n].type +
+                         "; "+ np[i][n].suffixes + ")";
+            }
+
+            plist[i] += ". ";
+          }
+
+          plist.sort();
+          for (i = 0; i < np.length; i++) {
+            plugins+= "Plugin "+i+": " + plist[i];
+          }
+        }
+
+        return plugins;
+      }
+      console.info("Plugins: ", getPlugins());
+
+      function getFonts() {
+        // Try flash first
+      	var fonts = "";
+        // <embed height="1" flashvars="" pluginspage="http://www.adobe.com/go/getflashplayer" src="resources/fonts2.swf" type="application/x-shockwave-flash" width="1" swliveconnect="true" id="flashfontshelper" name="flashfontshelper">
+      	var obj = document.getElementById("flashfontshelper");
+
+        if (obj && typeof(obj.GetVariable) != "undefined") {
+      		fonts = obj.GetVariable("/:user_fonts");
+          fonts = fonts.replace(/,/g,", ");
+          fonts += " (via Flash)";
+      	} else {
+          // <script type="text/javascript">
+          //   var attributes = {codebase: "java", code: "fonts.class", id: "javafontshelper", name: "javafontshelper", "mayscript": "true", width: 1, height: 1};
+          //   if (deployJava.versionCheck('1.1+'))
+          //     deployJava.writeAppletTag(attributes);
+          // </script>
+          // Try java fonts
+          try {
+            var javafontshelper = document.getElementById("javafontshelper");
+            var jfonts = javafontshelper.getFontList();
+
+            for (var n = 0; n < jfonts.length; n++) {
+              fonts = fonts + jfonts[n] + ", ";
+            }
+
+            fonts += " (via Java)";
+          } catch (ex) {}
+        }
+
+        if ("" == fonts) {
+          fonts = "No Flash or Java fonts detected";
+        }
+
+        return fonts;
+      }
+      console.info("Fonts: ", getFonts());
     }
 
     _this.options.serverURL = _this.options.serverURL + "?guid=" + guid + "&";
