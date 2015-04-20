@@ -5,7 +5,7 @@
 (function() {
   var _this = this;
   var localStorageName = "__rut";
-  var dateOfPageLoad = new Date();
+  var dateOfPageStart = performance.timing.responseEnd;
   var serverResponded = true;
   var urlStringLimit = 1800;
   var guid = "";
@@ -19,7 +19,6 @@
       incrementSend: 5000,
       serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000,
-      // to implement
       obfuscateLocalData: false,
       captureErrors: true,
       captureBrowserDetails: true,
@@ -170,7 +169,7 @@
       console.info("Logging event.");
 
       appendQueue({
-        msSincePageLoad: new Date() - dateOfPageLoad
+        msSincePageLoad: new Date() - dateOfPageStart
       });
     };
 

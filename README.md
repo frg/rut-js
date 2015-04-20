@@ -13,9 +13,10 @@ A javascript plugin with the aim of making user tracking flexible and effortless
  - add hover in / out event triggers
  - add click triggers
  - add bounce trigger
- - capture errors
- - capture page load
- - capture user agent, plugins, fonts, resolutions
+ - ~~capture errors~~
+ - ~~capture page load~~
+ - ~~capture user agent, plugins, fonts, resolutions~~
+ - local data obfuscation
 
 ##  Installation
 
