@@ -64,7 +64,7 @@
         }
 
         console.info('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' +  errorObj);
-      }
+      };
     }
 
     // Get page load time
@@ -90,20 +90,21 @@
           console.info("Navigation & Page load: ", t.loadEventEnd - t.navigationStart, "ms");
 
         }, 0);
-      }
+      };
     }
 
     // Get browser details
-    if (_this.options.captureBrowserDetails == true) {
-      navigator.userAgent
-      navigator.appVersion
-      navigator.platform
-      navigator.cookieEnabled
-      window.outerWidth
-      window.outerHeight
-      window.innerWidth
-      window.innerHeight
-      window.navigator.javaEnabled()
+    if (_this.options.captureBrowserDetails === true) {
+      // TO CAPTURE
+      // navigator.userAgent
+      // navigator.appVersion
+      // navigator.platform
+      // navigator.cookieEnabled
+      // window.outerWidth
+      // window.outerHeight
+      // window.innerWidth
+      // window.innerHeight
+      // window.navigator.javaEnabled()
 
       // Credit to font and plugin code
       // https://panopticlick.eff.org
@@ -114,7 +115,7 @@
         // in Mozilla and most non-IE browsers
         if (navigator.plugins) {
           var np = navigator.plugins;
-          var plist = new Array();
+          var plist = [];
 
           // sorting navigator.plugins is a right royal pain
           // but it seems to be necessary because their order
@@ -148,7 +149,7 @@
         // <embed height="1" flashvars="" pluginspage="http://www.adobe.com/go/getflashplayer" src="resources/fonts2.swf" type="application/x-shockwave-flash" width="1" swliveconnect="true" id="flashfontshelper" name="flashfontshelper">
       	var obj = document.getElementById("flashfontshelper");
 
-        if (obj && typeof(obj.GetVariable) != "undefined") {
+        if (obj && typeof(obj.GetVariable) !== "undefined") {
       		fonts = obj.GetVariable("/:user_fonts");
           fonts = fonts.replace(/,/g,", ");
           fonts += " (via Flash)";
@@ -171,7 +172,7 @@
           } catch (ex) {}
         }
 
-        if ("" == fonts) {
+        if ("" === fonts) {
           fonts = "No Flash or Java fonts detected";
         }
 
@@ -227,8 +228,8 @@
     };
 
     if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
-      window['rut'] = _this;
       window.setInterval(function() {
+        // BUG: incocrrect this reference
         _this.sendQueue( _this.getQueue() );
       }, _this.options.incrementSend);
     } else {
@@ -358,7 +359,7 @@
   function setLocalData(data) {
     data = JSON.stringify(data);
 
-    if (_this.options.obfuscateLocalData == true) {
+    if (_this.options.obfuscateLocalData === true) {
       data = btoa(data);
     }
 
@@ -370,7 +371,7 @@
     // Retrieve the object from storage
     var json = localStorage.getItem(localStorageName);
 
-    if (_this.options.obfuscateLocalData == true) {
+    if (_this.options.obfuscateLocalData === true) {
       // decode base64
       try {
         json = atob(json);
