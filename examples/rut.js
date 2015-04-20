@@ -15,19 +15,39 @@
       return v.toString(16);
   });
 
+  // Enable the passage of the 'this' object through the JavaScript timers
+  // https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval#The_.22this.22_problem
+  var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
+
+  window.setTimeout = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
+    var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
+    return __nativeST__(vCallback instanceof Function ? function () {
+      vCallback.apply(oThis, aArgs);
+    } : vCallback, nDelay);
+  };
+
+  window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
+    var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
+    return __nativeSI__(vCallback instanceof Function ? function () {
+      vCallback.apply(oThis, aArgs);
+    } : vCallback, nDelay);
+  };
+
   // Define our constructor
   this.Rut = function() {
 
     // Define option defaults
     var defaults = {
-      debugMode: true,
+      debugMode: false,
       incrementSend: 5000,
       serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000,
-      obfuscateLocalData: false,
       captureErrors: true,
       captureBrowserDetails: true,
-      capturePageStats: true
+      capturePageStats: true,
+
+      // if switched data loss should be expected
+      obfuscateLocalData: true
     };
 
     // Create options by extending defaults with the passed in arugments
@@ -178,20 +198,6 @@
       });
     };
 
-    if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
-      window.setInterval(function() {
-        _this.sendQueue(_this.getQueue());
-      }, _this.options.incrementSend);
-    } else {
-      // append log function to send data on log
-      var _oldLogEvent = _this.logEvent;
-      this.logEvent = function() {
-          _oldLogEvent.apply(this, arguments); // use .apply() to call it
-
-          _this.sendQueue();
-        };
-    }
-
     // send current queue to server
     this.sendQueue = function() {
       console.info("Sending queue.");
@@ -219,6 +225,21 @@
         };
       }
     };
+
+    if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
+      window['rut'] = _this;
+      window.setInterval(function() {
+        _this.sendQueue( _this.getQueue() );
+      }, _this.options.incrementSend);
+    } else {
+      // append log function to send data on log
+      var _oldLogEvent = _this.logEvent;
+      this.logEvent = function() {
+          _oldLogEvent.apply(this, arguments); // use .apply() to call it
+
+          _this.sendQueue();
+        };
+    }
   };
 
   // Public Methods
@@ -246,7 +267,7 @@
     localData.queue = [];
 
     // save localdata
-    localStorage.setItem(localStorageName, JSON.stringify(localData));
+    setLocalData(localData);
 
     return localData;
   }
@@ -256,7 +277,7 @@
   //   var localData = getLocalData();
   //   localData.pipeline = pipelineArr;
   //
-  //   localStorage.setItem(localStorageName, JSON.stringify(localData));
+  //   setLocalData(localData);
   // }
 
   // append event queue ready to be sent
@@ -266,7 +287,7 @@
     // append queue
     localData.queue.push(event);
 
-    localStorage.setItem(localStorageName, JSON.stringify(localData));
+    setLocalData(localData);
   }
 
   // gets events that are waiting for
@@ -283,7 +304,7 @@
     localData.pipeline = [];
 
     // save pipeline
-    localStorage.setItem(localStorageName, JSON.stringify(localData));
+    setLocalData(localData);
   }
 
   // gets event queue
@@ -299,7 +320,7 @@
   //   localData.queue = [];
   //
   //   // save queue
-  //   localStorage.setItem(localStorageName, JSON.stringify(localData));
+  //   setLocalData(localData);
   // }
 
   // Creates the default local storage json object
@@ -333,10 +354,30 @@
     return true;
   }
 
+  // Sets rut data in local storage
+  function setLocalData(data) {
+    data = JSON.stringify(data);
+
+    if (_this.options.obfuscateLocalData == true) {
+      data = btoa(data);
+    }
+
+    localStorage.setItem(localStorageName, data);
+  }
+
   // Gets rut data from local storage
   function getLocalData() {
     // Retrieve the object from storage
     var json = localStorage.getItem(localStorageName);
+
+    if (_this.options.obfuscateLocalData == true) {
+      // decode base64
+      try {
+        json = atob(json);
+      } catch (e) {
+        return createDefaultJson();
+      }
+    }
 
     if (json !== null && isDataValid(json)) {
       return JSON.parse(json);

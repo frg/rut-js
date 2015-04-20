@@ -9,14 +9,14 @@ A javascript plugin with the aim of making user tracking flexible and effortless
 
 ## Todo
  - **TEST**
- - assign queue to current page load
+ - assign queue to current page load (will implement using guid)
  - add hover in / out event triggers
  - add click triggers
  - add bounce trigger
- - ~~capture errors~~
+ - ~~capture errors~~ (most browsers don't support this.. might remove)
  - ~~capture page load~~
- - ~~capture user agent, plugins, fonts, resolutions~~
- - local data obfuscation
+ - ~~capture user agent, plugins, fonts, resolutions~~ (some of these are a bit hacky)
+ - ~~local data obfuscation~~ (implemented using base64)
 
 ##  Installation
 
