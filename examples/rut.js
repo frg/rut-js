@@ -7,8 +7,13 @@
   var localStorageName = "__rut";
   var dateOfPageStart = performance.timing.responseEnd;
   var serverResponded = true;
+  // hard url limit should be around 2100 characters
   var urlStringLimit = 1800;
   var guid = "";
+  var instanceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+  });
 
   // Define our constructor
   this.Rut = function() {
