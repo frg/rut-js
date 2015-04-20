@@ -1,10 +1,13 @@
-// Create an immediately invoked functional expression to wrap our code
+// [rut.js] is a native js plugin that tracks user behaviour & gathers page insights
+// [version] 0.1
+// [by] Jean Farrugia (http://github.com/frg)
+
 (function() {
   var _this = this;
   var localStorageName = "__rut";
   var dateOfPageLoad = new Date();
   var serverResponded = true;
-  var urlStringLimit = 1900;
+  var urlStringLimit = 1800;
   var guid = "";
 
   // Define our constructor
@@ -17,9 +20,10 @@
       serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000,
       // to implement
-      logErrors: true,
       obfuscateLocalData: false,
-      captureBrowserDetails: false
+      captureErrors: true,
+      captureBrowserDetails: false,
+      capturePageStats: false
     };
 
     // Create options by extending defaults with the passed in arugments
