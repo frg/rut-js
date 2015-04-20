@@ -12,6 +12,10 @@ A javascript plugin with the aim of making user tracking flexible and effortless
  - assign queue to current page load
  - add hover in / out event triggers
  - add click triggers
+ - add bounce trigger
+ - capture errors
+ - capture page load
+ - capture user agent, plugins, fonts, resolutions
 
 ##  Installation
 

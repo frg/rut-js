@@ -18,7 +18,8 @@
       retryOnFailTimeout: 5000,
       // to implement
       logErrors: true,
-      obfuscateLocalData: false
+      obfuscateLocalData: false,
+      captureBrowserDetails: false
     };
 
     // Create options by extending defaults with the passed in arugments
@@ -30,7 +31,7 @@
 
     // check for local storage support
     try {
-      ('localStorage' in window && window.localStorage !== null) ? : '';
+      ('localStorage' in window && window.localStorage !== null)
     } catch(e) {
       _this.options.incrementSend = false;
     }
