@@ -44,6 +44,64 @@ Possible options:
 * `serverURL` - url to send data to - *string*: `current url + "/rut"`
 * `retryOnFailTimeout` – ms until retry of failed queue send – *int*: `5000`
 
+### LocalStorage
+Format:
+
+```sh
+{
+  "pipeline": {
+    "er4cfb96-67bf-4s90-b6d2-86743217a840": [
+      {
+        "msSincePageLoad": 4249,
+        "category": "registration",
+        "id": "register",
+        "type": "button",
+        "action": "click",
+        "value": {}
+      }
+    ]
+  },
+  "queue": {
+    "cd2cfb96-87bf-4d90-b6d2-80213217a840": [
+      {
+        "msSincePageLoad": 4249,
+        "category": "registration",
+        "id": "register",
+        "type": "button",
+        "action": "click",
+        "value": {}
+      },
+      {
+        "msSincePageLoad": 5139,
+        "category": "registration",
+        "id": "register",
+        "type": "button",
+        "action": "hover",
+        "value": {
+          "out": 10
+        }
+      },
+      {
+        "msSincePageLoad": 5139,
+        "category": "registration",
+        "id": "register",
+        "type": "button",
+        "action": "right-click",
+        "value": {}
+      },
+      {
+        "BrowserDetails": {
+          "userAgent": "",
+          "plugins": ""
+        }
+      },
+      {
+        "PageStats": {}
+      }
+    ]
+  }
+}
+```
 
 ## License
 MIT

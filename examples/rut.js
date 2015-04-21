@@ -17,21 +17,6 @@
 
   // Enable the passage of the 'this' object through the JavaScript timers
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval#The_.22this.22_problem
-  var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
-
-  window.setTimeout = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
-    var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
-    return __nativeST__(vCallback instanceof Function ? function () {
-      vCallback.apply(oThis, aArgs);
-    } : vCallback, nDelay);
-  };
-
-  window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
-    var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
-    return __nativeSI__(vCallback instanceof Function ? function () {
-      vCallback.apply(oThis, aArgs);
-    } : vCallback, nDelay);
-  };
 
   // Define our constructor
   this.Rut = function() {
@@ -191,7 +176,7 @@
     }
 
     // log event to queue
-    this.logEvent = function() {
+    _this.logEvent = function() {
       console.info("Logging event.");
 
       appendQueue({
@@ -200,7 +185,7 @@
     };
 
     // send current queue to server
-    this.sendQueue = function() {
+    _this.sendQueue = function() {
       console.info("Sending queue.");
 
       var pipeline = appendPipelineWithQueue().pipeline;
@@ -214,28 +199,26 @@
         // load / fail events
         i.onload = function(){
           serverResponded = true;
-          console.info("info send success");
+          console.info("Pipeline delivery success");
           clearPipeline();
         };
         i.onerror = function(){
           serverResponded = true;
-          console.info("info send failed");
+          console.info("Pipeline delivery failed");
 
           // retry send queue
-          setTimeout(_this.sendQueue, _this.options.retryOnFailTimeout);
+          window.setTimeout( _this.sendQueue , _this.options.retryOnFailTimeout);
         };
       }
     };
 
     if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
-      window.setInterval(function() {
-        // BUG: incocrrect this reference
-        _this.sendQueue( _this.getQueue() );
-      }, _this.options.incrementSend);
+      window.setInterval( _this.sendQueue , _this.options.incrementSend);
     } else {
+      // enables insta-send
       // append log function to send data on log
       var _oldLogEvent = _this.logEvent;
-      this.logEvent = function() {
+      _this.logEvent = function() {
           _oldLogEvent.apply(this, arguments); // use .apply() to call it
 
           _this.sendQueue();
