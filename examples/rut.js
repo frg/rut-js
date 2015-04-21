@@ -27,18 +27,21 @@
       incrementSend: 5000,
       serverURL: window.location.origin + "/rut",
       retryOnFailTimeout: 5000,
-      captureErrors: true,
+      captureErrors: false,
       captureBrowserDetails: true,
       capturePageStats: true,
 
       // if switched data loss should be expected
-      obfuscateLocalData: true
+      obfuscateLocalData: false
     };
 
     // Create options by extending defaults with the passed in arugments
     if (arguments[0] && typeof arguments[0] === "object") {
       _this.options = extendDefaults(defaults, arguments[0]);
     }
+
+
+    _this.options.serverURL = _this.options.serverURL + "?guid=" + guid + "&";
 
     // Capture errors
     if (_this.options.captureErrors == true) {
@@ -166,8 +169,6 @@
       console.info("Fonts: ", getFonts());
     }
 
-    _this.options.serverURL = _this.options.serverURL + "?guid=" + guid + "&";
-
     // check for local storage support
     try {
       ('localStorage' in window && window.localStorage !== null)
@@ -176,7 +177,7 @@
     }
 
     // log event to queue
-    _this.logEvent = function() {
+    this.logEvent = function() {
       console.info("Logging event.");
 
       appendQueue({
@@ -185,7 +186,7 @@
     };
 
     // send current queue to server
-    _this.sendQueue = function() {
+    this.sendQueue = function() {
       console.info("Sending queue.");
 
       var pipeline = appendPipelineWithQueue().pipeline;
@@ -194,7 +195,7 @@
       if (serverResponded && pipeline.length > 0) {
         serverResponded = false;
         var i = new Image();
-        i.src = _this.options.serverURL + 'queue=' + JSON.stringify(pipeline);
+        i.src = _this.options.serverURL + 'data=' + JSON.stringify(pipeline);
 
         // load / fail events
         i.onload = function(){
@@ -217,11 +218,11 @@
     } else {
       // enables insta-send
       // append log function to send data on log
-      var _oldLogEvent = _this.logEvent;
-      _this.logEvent = function() {
+      var _oldLogEvent = this.logEvent;
+      this.logEvent = function() {
           _oldLogEvent.apply(this, arguments); // use .apply() to call it
 
-          _this.sendQueue();
+          this.sendQueue();
         };
     }
   };
@@ -243,7 +244,7 @@
     var localData = getLocalData();
     var newPipeline = localData.pipeline.concat(localData.queue);
 
-    if ((_this.options.serverURL + 'queue=' + JSON.stringify(newPipeline)).length >= urlStringLimit) {
+    if ((_this.options.serverURL + 'data=' + JSON.stringify(newPipeline)).length >= urlStringLimit) {
       return false;
     }
 
