@@ -5,7 +5,7 @@
 ### **THIS PLUGIN IS STILL IN DEVELOPMENT
 
 ## Description
-A javascript plugin with the aim of making user tracking flexible and effortless. The plugin is in its very early stages of implementation therefore here's my to-do list up front.
+A **javascript** plugin with the aim of making user tracking flexible and effortless. The plugin is in its very early stages of implementation therefore here's my to-do list up front.
 
 ## Todo
  - **TEST**
