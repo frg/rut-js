@@ -9,14 +9,14 @@ A javascript plugin with the aim of making user tracking flexible and effortless
 
 ## Todo
  - **TEST**
- - assign queue to current page load (will implement using guid)
  - add hover in / out event triggers
  - add click triggers
  - add bounce trigger
+ - ~~assign queue to current page load~~ (implemented using guid)
  - ~~capture errors~~ (most browsers don't support this.. might remove)
  - ~~capture page load~~
  - ~~capture user agent, plugins, fonts, resolutions~~ (some of these are a bit hacky)
- - ~~local data obfuscation~~ (implemented using base64)
+ - ~~local data obfuscation~~
 
 ##  Installation
 
@@ -29,7 +29,6 @@ Example:
 ```sh
 var _rut = new Rut({
   requestTimeout: 300,
-  cacheSecret: "abc123",
   serverURL: "localhost:5467/rut"
 });
 ```
