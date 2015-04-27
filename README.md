@@ -55,8 +55,7 @@ Format:
         "category": "registration",
         "id": "register",
         "type": "button",
-        "action": "click",
-        "value": {}
+        "action": "click"
       }
     ]
   },
@@ -67,26 +66,21 @@ Format:
         "category": "registration",
         "id": "register",
         "type": "button",
-        "action": "click",
-        "value": {}
+        "action": "click"
       },
       {
         "msSincePageLoad": 5139,
         "category": "registration",
         "id": "register",
         "type": "button",
-        "action": "hover",
-        "value": {
-          "out": 10
-        }
+        "action": "hover-in"
       },
       {
         "msSincePageLoad": 5139,
         "category": "registration",
         "id": "register",
         "type": "button",
-        "action": "right-click",
-        "value": {}
+        "action": "right-click"
       },
       {
         "BrowserDetails": {
