@@ -40,10 +40,66 @@
             _this.options = extendDefaults(defaults, arguments[0]);
         }
 
-
         _this.options.serverURL = _this.options.serverURL + "?guid=" + guid + "&";
 
-        // Capture errors
+        // check for local storage support
+        try {
+            ('localStorage' in window && window.localStorage !== null)
+        } catch (e) {
+            _this.options.incrementSend = false;
+        }
+
+        // log event to queue
+        this.logEvent = function () {
+            console.info("Logging event.");
+
+            appendQueueToPageInstance({
+                msSincePageLoad: new Date() - dateOfPageStart
+            });
+        };
+
+        // send current queue to server
+        this.sendQueue = function () {
+            console.info("Sending queue.");
+
+            var pipeline = appendPipelineWithQueue().pipeline;
+
+            // if events exist in pipeline
+            if (serverResponded && pipeline.length > 0) {
+                serverResponded = false;
+                var i = new Image();
+                i.src = _this.options.serverURL + 'data=' + JSON.stringify(pipeline);
+
+                // load / fail events
+                i.onload = function () {
+                    serverResponded = true;
+                    console.info("Pipeline delivery success");
+                    clearPipeline();
+                };
+                i.onerror = function () {
+                    serverResponded = true;
+                    console.info("Pipeline delivery failed");
+
+                    // retry send queue
+                    window.setTimeout(_this.sendQueue, _this.options.retryOnFailTimeout);
+                };
+            }
+        };
+
+        if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
+            window.setInterval(_this.sendQueue, _this.options.incrementSend);
+        } else {
+            // enables insta-send
+            // append log function to send data on log
+            var _oldLogEvent = this.logEvent;
+            this.logEvent = function () {
+                _oldLogEvent.apply(this, arguments); // use .apply() to call it
+
+                this.sendQueue();
+            };
+        }
+
+        /*// Capture errors
         if (_this.options.captureErrors == true) {
             window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
                 if (errorMsg.indexOf('Script error.') > -1) {
@@ -96,64 +152,7 @@
 
             console.info("Plugins: ", getPlugins());
             console.info("Fonts: ", getFonts());
-        }
-
-        // check for local storage support
-        try {
-            ('localStorage' in window && window.localStorage !== null)
-        } catch (e) {
-            _this.options.incrementSend = false;
-        }
-
-        // log event to queue
-        this.logEvent = function () {
-            console.info("Logging event.");
-
-            appendQueue({
-                msSincePageLoad: new Date() - dateOfPageStart
-            });
-        };
-
-        // send current queue to server
-        this.sendQueue = function () {
-            console.info("Sending queue.");
-
-            var pipeline = appendPipelineWithQueue().pipeline;
-
-            // if events exist in pipeline
-            if (serverResponded && pipeline.length > 0) {
-                serverResponded = false;
-                var i = new Image();
-                i.src = _this.options.serverURL + 'data=' + JSON.stringify(pipeline);
-
-                // load / fail events
-                i.onload = function () {
-                    serverResponded = true;
-                    console.info("Pipeline delivery success");
-                    clearPipeline();
-                };
-                i.onerror = function () {
-                    serverResponded = true;
-                    console.info("Pipeline delivery failed");
-
-                    // retry send queue
-                    window.setTimeout(_this.sendQueue, _this.options.retryOnFailTimeout);
-                };
-            }
-        };
-
-        if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
-            window.setInterval(_this.sendQueue, _this.options.incrementSend);
-        } else {
-            // enables insta-send
-            // append log function to send data on log
-            var _oldLogEvent = this.logEvent;
-            this.logEvent = function () {
-                _oldLogEvent.apply(this, arguments); // use .apply() to call it
-
-                this.sendQueue();
-            };
-        }
+        }*/
     };
 
     // Public Methods
@@ -171,14 +170,30 @@
     // append current queue to pipeline
     function appendPipelineWithQueue() {
         var localData = getLocalData();
-        var newPipeline = localData.pipeline.concat(localData.queue);
 
-        if ((_this.options.serverURL + 'data=' + JSON.stringify(newPipeline)).length >= urlStringLimit) {
-            return false;
+        // loop through queue items
+        for (var queueItem in localData.queue) {
+            if (localData.queue.hasOwnProperty(queueItem)) {
+                // check if page instance guid exists in pipeline
+                if (localData.pipeline.hasOwnProperty(queueItem)) {
+                    // cache old pipeline
+                    var newPipeline = localData.pipeline;
+                    // append queue item
+                    newPipeline = newPipeline.queueItem.concat(localData.queue.queueItem);
+
+                    // check if string limit is reached
+                    if ((_this.options.serverURL + 'data=' + JSON.stringify(newPipeline)).length >= urlStringLimit) {
+                        console.info("Rut-js: url string too long");
+                        return null;
+                    }
+
+                    // append page instance to pipeline
+                    localData.pipeline = newPipeline;
+                    // delete page instance
+                    delete localData.queue.queueItem;
+                }
+            }
         }
-
-        localData.pipeline = newPipeline;
-        localData.queue = [];
 
         // save localdata
         setLocalData(localData);
@@ -194,12 +209,21 @@
     //   setLocalData(localData);
     // }
 
-    // append event queue ready to be sent
-    function appendQueue(event) {
+    // append queueItem to queue ready to be sent
+    function appendQueueToPageInstance(queueItem) {
         var localData = getLocalData();
 
         // append queue
-        localData.queue.push(event);
+        localData.queue.push(queueItem);
+
+        if (!localData.queue.hasOwnProperty(instanceId)) {
+            // if page instance does not already exist
+            // create it in queue
+            localData.queue.instanceId = [];   
+        }
+
+        // append to queue
+        localData.queue.instanceId.push(queueItem);
 
         setLocalData(localData);
     }
