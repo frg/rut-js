@@ -27,6 +27,8 @@
             incrementSend: 5000,
             serverURL: window.location.origin + "/rut",
             retryOnFailTimeout: 5000,
+
+            // capture additional data
             captureErrors: false,
             captureBrowserDetails: true,
             capturePageStats: true,
@@ -64,7 +66,8 @@
 
             var pipeline = appendPipelineWithQueue().pipeline;
 
-            // if events exist in pipeline
+            // if pipeline is noot empty
+            // and server has returned a response
             if (serverResponded && pipeline.length > 0) {
                 serverResponded = false;
                 var i = new Image();
@@ -81,13 +84,15 @@
                     console.info("Pipeline delivery failed");
 
                     // retry send queue
-                    window.setTimeout(_this.sendQueue, _this.options.retryOnFailTimeout);
+                    window.setTimeout(_this.sendQueue,
+                                        _this.options.retryOnFailTimeout);
                 };
             }
         };
 
         if (!_this.options.debugMode && isInt(_this.options.incrementSend) && _this.options.incrementSend > 0) {
-            window.setInterval(_this.sendQueue, _this.options.incrementSend);
+            window.setInterval(_this.sendQueue,
+                                _this.options.incrementSend);
         } else {
             // enables insta-send
             // append log function to send data on log
