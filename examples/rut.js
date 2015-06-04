@@ -206,14 +206,6 @@
         return localData;
     }
 
-    // set pipeline
-    // function setPipeline(pipelineArr) {
-    //   var localData = getLocalData();
-    //   localData.pipeline = pipelineArr;
-    //
-    //   setLocalData(localData);
-    // }
-
     // append queueItem to queue ready to be sent
     function appendQueueToPageInstance(queueItem) {
         var localData = getLocalData();
@@ -249,22 +241,6 @@
         // save pipeline
         setLocalData(localData);
     }
-
-    // gets event queue
-    // function getQueue() {
-    //   return getLocalData().queue;
-    // }
-
-    // clears event queue
-    // function clearQueue() {
-    //   var localData = getLocalData();
-    //
-    //   // clear queue
-    //   localData.queue = [];
-    //
-    //   // save queue
-    //   setLocalData(localData);
-    // }
 
     // Creates the default local storage json object
     function createDefaultJson() {
@@ -331,7 +307,7 @@
 
     // UTILS
 
-    // Credit to font and plugin code
+    // Credit for font and plugin code
     // https://panopticlick.eff.org
     function getPlugins() {
         // fetch and serialize plugins

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>mini-rut.js example</title>
+    <script src="mini-rut.min.js"></script>
+<!--    <script src="mini-rut.js"></script>-->
+  </head>
+  <body>
+    
+    <h1>
+      MiniRut-js TEST
+    </h1>
+    <aside> Use: _rut.logEvent("category", "action", "label", "value", "userInteraction")</aside>
+    <aside> Example: _rut.logEvent("signup", "click", "signup-button", "", 1)</aside>
+    
+    <script charset="utf-8">
+      var _rut = new MiniRut({
+        serverURL: "http://localhost:9660/analytics/pageevent/create"
+      });
+      // _rut.open();
+    </script>
+  </body>
+</html>
